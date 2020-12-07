@@ -36,12 +36,14 @@ func main() {
 out:
 	for i, entry1 := range entries {
 		for y, entry2 := range entries {
-			if i != y {
-				sum := entry1 + entry2
-				if sum == 2020 {
-					fmt.Printf("Found 2 entries that sum to 2020: %d and %d \n", entry1, entry2)
-					fmt.Printf("Multiplying them together: %d \n", entry1*entry2)
-					break out
+			for x, entry3 := range entries {
+				if i != y && y != x && i != x {
+					sum := entry1 + entry2 + entry3
+					if sum == 2020 {
+						fmt.Printf("Found 3 entries that sum to 2020: %d, %d and %d \n", entry1, entry2, entry3)
+						fmt.Printf("Multiplying them together: %d \n", entry1*entry2*entry3)
+						break out
+					}
 				}
 			}
 		}
