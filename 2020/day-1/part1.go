@@ -3,7 +3,6 @@ package main
 import (
     "bufio"
     "fmt"
-    "log"
     "os"
     "strconv"
 )
@@ -17,9 +16,7 @@ func check(e error) {
 func main() {
 
     file, err := os.Open("/Users/ahassoun/Documents/adventofcode/2020/day-1/input.txt")
-    if err != nil {
-        log.Fatal(err)
-    }
+    check(err)
     defer file.Close()
 
     scanner := bufio.NewScanner(file)
@@ -30,9 +27,7 @@ func main() {
 
     for scanner.Scan() {
         entry , err := strconv.Atoi(scanner.Text())
-        if err != nil {
-            log.Fatal(err)
-        }
+        check(err)
         entries = append(entries, entry)
     }
 
