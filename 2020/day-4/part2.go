@@ -19,7 +19,7 @@ func main() {
 
 	dir, err := os.Getwd()
 	check(err)
-	fileIO, err := os.OpenFile(dir+"/day-4/input-part2s.txt", os.O_RDWR, 0600)
+	fileIO, err := os.OpenFile(dir+"/day-4/input-part2.txt", os.O_RDWR, 0600)
 	check(err)
 
 	defer fileIO.Close()
@@ -33,21 +33,77 @@ func main() {
 
 	lines := strings.Split(string(rawBytes), "\n\n")
 	for _, passport := range lines {
+		properPassport := strings.ReplaceAll(passport, "\n", " ")
 		for _, field := range required {
-			if strings.Contains(passport, field+":") {
+			if strings.Contains(properPassport, field+":") {
 				fieldCount += 1
 			}
 		}
 		if fieldCount == 8 {
-			validPassports += 1
+			validFieldsCount := validatePassport(strings.Split(properPassport, " "))
+			if validFieldsCount == 7 {
+				validPassports += 1
+			}
 		}
 
-		if fieldCount == 7 && !(strings.Contains(passport, "cid:")) {
-			validPassports += 1
+		if fieldCount == 7 && !(strings.Contains(properPassport, "cid:")) {
+			validFieldsCount := validatePassport(strings.Split(properPassport, " "))
+			if validFieldsCount == 7 {
+				validPassports += 1
+			}
 		}
 		fieldCount = 0
 	}
 	fmt.Printf("Total # of valid passports: %d\n", validPassports)
+}
+
+func validatePassport(passport []string) int {
+	validationCount := 0
+	for _, field := range passport {
+		if strings.Contains(field, "byr"){
+			isBYRvalid := validBirthYear(strings.Split(field, ":")[1])
+			if isBYRvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "iyr"){
+			isIYRvalid := validIssueYear(strings.Split(field, ":")[1])
+			if isIYRvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "eyr"){
+			isEYRvalid := validExpirationYear(strings.Split(field, ":")[1])
+			if isEYRvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "hgt"){
+			isHGTvalid := validHeight(strings.Split(field, ":")[1])
+			if isHGTvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "hcl"){
+			isHCLvalid := validHairColor(strings.Split(field, ":")[1])
+			if isHCLvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "ecl"){
+			isECLvalid := validateEyeColor(strings.Split(field, ":")[1])
+			if isECLvalid{
+				validationCount += 1
+			}
+		}
+		if strings.Contains(field, "pid"){
+			isPIDvalid := validatePID(strings.Split(field, ":")[1])
+			if isPIDvalid{
+				validationCount += 1
+			}
+		}
+	}
+	return validationCount
 }
 
 func validBirthYear(byr string) bool {
@@ -85,7 +141,7 @@ func validHeight(height string) bool {
 		}
 	} else {
 		intHeight := getNumericalHeight(height, "in")
-		if intHeight >= 150 && intHeight <= 193 {
+		if intHeight >= 59 && intHeight <= 76 {
 			return true
 		}
 	}
