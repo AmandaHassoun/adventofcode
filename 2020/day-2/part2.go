@@ -8,8 +8,15 @@ import (
 	"strings"
 )
 
-func part1() {
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 
+func main() {
+
+	//part1()
 	dir, err := os.Getwd()
 	check(err)
 	file, err := os.Open(dir + "/day-2/input.txt")
@@ -26,13 +33,12 @@ func part1() {
 		splitPolicy := strings.Fields(policy)
 		validCounts := strings.Split(splitPolicy[0], "-")
 		character := splitPolicy[1]
-		password := strings.TrimSpace(line[1])
-		actualCount := strings.Count(password, character)
-		minCount, err := strconv.Atoi(validCounts[0])
+		password := strings.Split(strings.TrimSpace(line[1]), "")
+		index1, err := strconv.Atoi(validCounts[0])
 		check(err)
-		maxCount, err := strconv.Atoi(validCounts[1])
+		index2, err := strconv.Atoi(validCounts[1])
 		check(err)
-		if actualCount >= minCount && actualCount <= maxCount {
+		if (password[index1-1] == character || password[index2-1] == character) && !(password[index1-1] == character && password[index2-1] == character) {
 			validPasswords += 1
 		}
 	}

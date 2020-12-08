@@ -7,14 +7,9 @@ import (
 	"strconv"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 
+	part1()
 	dir, err := os.Getwd()
 	check(err)
 	file, err := os.Open(dir + "/day-1/input.txt")

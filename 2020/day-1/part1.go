@@ -13,7 +13,7 @@ func check(e error) {
 	}
 }
 
-func main() {
+func part1() {
 
 	dir, err := os.Getwd()
 	check(err)
