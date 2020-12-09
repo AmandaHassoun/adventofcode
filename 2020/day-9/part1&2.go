@@ -17,6 +17,7 @@ func check(e error) {
 var instructCount = make(map[string]int)
 var preamble = 25
 var numsToConsider = 25
+var invalidNum int
 
 func main() {
 
@@ -43,14 +44,33 @@ func main() {
 	for i, _ := range allNumbers {
 		i += preamble
 		numbersToSkip := allNumbers[i-numsToConsider:i]
-		fmt.Println(numbersToSkip)
 		sumCombos := findSumCombos(numbersToSkip)
 		inList := sumInList(allNumbers[i], sumCombos)
-		if inList {
-			fmt.Println(allNumbers[i])
-		} else {
+		if !inList {
 			fmt.Printf("This number doesn't add up to previous: %d\n ",allNumbers[i])
+			invalidNum = allNumbers[i]
 			break out
+		}
+	}
+
+	var currSum = 0
+	var contiguousNums []int
+	var initialIndex = 0
+
+	for i, _ := range allNumbers {
+		for currSum < invalidNum {
+			currSum += allNumbers[i]
+			contiguousNums = append(contiguousNums, allNumbers[i])
+			i++
+		}
+		if currSum == invalidNum {
+			min, max := findMinMax(contiguousNums)
+			fmt.Printf("Sum of min&max: %d \n", min+max)
+			break
+		} else{
+			i = initialIndex + 1
+			currSum = 0
+			contiguousNums = nil
 		}
 	}
 }
@@ -72,4 +92,18 @@ func sumInList(num int, sumList []int) bool {
 		}
 	}
 	return false
+}
+
+func findMinMax(sumList []int) (int,int) {
+	var max int = sumList[0]
+	var min int = sumList[0]
+	for _, num := range sumList {
+		if max < num {
+			max = num
+		}
+		if min > num {
+			min = num
+		}
+	}
+	return min, max
 }
