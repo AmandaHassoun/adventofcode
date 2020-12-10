@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ func check(e error) {
 
 var allRules = make(map[string][]string)
 var trackHits = make(map[string]int)
+var trackHitsPart2 = make(map[string][]int)
 
 func main() {
 
@@ -33,7 +35,8 @@ func main() {
 	lines := strings.Split(string(rawBytes), "\n")
 	for _, line := range lines {
 		lineWithoutPeriod := strings.TrimSuffix(line, ".")
-		parseRules(lineWithoutPeriod)
+		//parseRules(lineWithoutPeriod)
+		parseRulesPart2(lineWithoutPeriod)
 	}
 
 	for k, v := range allRules {
@@ -42,7 +45,45 @@ func main() {
 		}
 	}
 
-	fmt.Printf("Final count: %d \n", len(trackHits))
+	//Part 1
+	//fmt.Printf("Final count: %d \n", len(trackHits))
+
+	//Part 2
+	total := getBagCount("shiny gold bag", allRules["shiny gold bag"])
+	fmt.Printf("Individual bags required: %d \n", total)
+}
+
+func getBagCount(key string, rules []string) int {
+	var originalKey string
+	var amount int
+
+	for _, nestedRules := range rules {
+		splitCount := strings.Split(nestedRules, " ")
+		count, _ := strconv.Atoi(splitCount[0])
+		originalKey = splitCount[1]+ " " + splitCount[2] + " "+ splitCount[3]
+		trackHitsPart2[key] = append(trackHitsPart2[key], count)
+		amount += count
+		amount += (count * getBagCount(originalKey, allRules[originalKey]))
+	}
+	return amount
+}
+
+func parseRulesPart2(line string) {
+	rules := strings.Split(line, "contain")
+	trimTheS := strings.TrimSuffix(rules[0], "s ")
+	strTrimSpace := strings.TrimSpace(trimTheS)
+	for _, bagTypes := range rules[1:] {
+		if strings.Contains(bagTypes, "no other bags") {
+			allRules[strTrimSpace] = nil
+		} else {
+			remNumbers := strings.Split(bagTypes, ",")
+			for _, bagType := range remNumbers {
+				rawBagType := strings.TrimSuffix(bagType, "s")
+				nestedBagTrimSpace := strings.TrimSpace(rawBagType)
+				allRules[strTrimSpace] = append(allRules[strTrimSpace], nestedBagTrimSpace)
+			}
+		}
+	}
 }
 
 func parseRules(line string) {
