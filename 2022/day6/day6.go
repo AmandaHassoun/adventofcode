@@ -9,15 +9,16 @@ import (
 
 func main() {
 	// PART 1
-	startOfPacket := parseFile("input.txt")
-	fmt.Printf("(Part 1) Start of packet after: %d chars \n \n", startOfPacket)
+	startOfPacketPart1, startOfPacketPart2 := parseFile("input.txt")
+	fmt.Printf("(Part 1) Start of packet after: %d chars \n \n", startOfPacketPart1)
 
 	// PART 2
+	fmt.Printf("(Part 2) Start of packet after: %d chars \n \n", startOfPacketPart2)
 }
 
-func parseFile(filename string) int {
+func parseFile(filename string) (int, int) {
 	f, err := os.Open(filename)
-	var index int
+	var indexPart1, indexPart2 int
 
 	if err != nil {
 		log.Fatalf("Failed to open input file!!")
@@ -26,15 +27,17 @@ func parseFile(filename string) int {
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
-	    index = findStartOfPacket(scanner.Text())
+	    input := scanner.Text()
+	    indexPart1 = findStartOfPacket(input, 4)
+	    indexPart2 = findStartOfPacket(input, 14)
 	}
 
 	f.Close()
 
-	return index
+	return indexPart1, indexPart2
 }
 
-func findStartOfPacket(datastream string) (int){
+func findStartOfPacket(datastream string, markerCount int) (int){
     var packet []string
     var numOfChars int
 
@@ -42,10 +45,10 @@ func findStartOfPacket(datastream string) (int){
 
 		if !contains(packet, string(v)) {
 		    packet = append(packet, string(v))
-		    if (len(packet) == 4) && checkForDuplicates(packet) {
+		    if (len(packet) == markerCount) && checkForDuplicates(packet) {
                 packet = append(packet[:0], packet[1:]...)
 		    } else {
-		        if (len(packet) == 4) {
+		        if (len(packet) == markerCount) {
 		            numOfChars = index + 1
 		            break
 		        }
