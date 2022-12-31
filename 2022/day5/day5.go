@@ -13,15 +13,20 @@ var stackMap = make(map[int][]string)
 
 func main() {
 	// PART 1
-    getCrateArrangement("input.txt")
+    getCrateArrangement("input.txt", 1)
 	topCrate := topOfStack(stackMap)
-    fmt.Printf("(Part 1) Crates that end up on the top: %v\n \n", topCrate)
+    fmt.Printf("(Part 1) Crates that end up on the top: %s \n \n", topCrate)
+
+    // Reset global var
+    stackMap = make(map[int][]string)
 
 	// PART 2
-	//fmt.Printf("(Part 2) : %d \n \n", overlapPairs)
+	getCrateArrangement("input.txt", 2)
+	topCrate = topOfStack(stackMap)
+	fmt.Printf("(Part 2) Crates that end up on the top with the CrateMover 9001 : %s \n \n", topCrate)
 }
 
-func getCrateArrangement(filename string) () {
+func getCrateArrangement(filename string, part int) () {
 	f, err := os.Open(filename)
 
 	if err != nil {
@@ -39,7 +44,11 @@ func getCrateArrangement(filename string) () {
             src, _ := strconv.Atoi(move[3])
             dest, _ := strconv.Atoi(move[5])
             count, _ := strconv.Atoi(move[1])
-            moveFromStack(src, dest, count)
+            if part == 1 {
+                moveFromStack9000(src, dest, count)
+            } else if part == 2 {
+                moveFromStack9001(src, dest, count)
+            }
 	    }
 	}
 
@@ -60,13 +69,23 @@ func addToStackMap(stack string) {
     }
 }
 
-func moveFromStack(src int, dest int, count int) {
+func moveFromStack9000(src int, dest int, count int) {
     for i := 0; i < count; i++ {
         srcStackCrate := stackMap[src][0]
         // Add to dest
         stackMap[dest] = append([]string{srcStackCrate}, stackMap[dest]...)
         //Remove from source
         stackMap[src] = append(stackMap[src][:0], stackMap[src][1:]...)
+    }
+}
+
+func moveFromStack9001(src int, dest int, count int) {
+    for i := count - 1; i >= 0; i-- {
+        srcStackCrate := stackMap[src][i]
+        // Add to dest
+        stackMap[dest] = append([]string{srcStackCrate}, stackMap[dest]...)
+        //Remove from source
+        stackMap[src] = append(stackMap[src][:i], stackMap[src][i+1:]...)
     }
 }
 
